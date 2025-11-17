@@ -1,5 +1,5 @@
 const { sql, pool } = require('../db');
-const { isValidPassword } = require('../helper');
+const { isValidPassword } = require('../helper/helper');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
