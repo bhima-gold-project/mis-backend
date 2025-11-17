@@ -7,6 +7,7 @@ const { fetchImportedProducts, checkImportedStylecode } = require('../controller
 const { stylecodeSearchIn, stylecodeSearchSg, stylecodeSearchImportflow } = require('../controllers/productImport/stylecodeSearch');
 const { searchOrderstatus, shipmentSatus } = require('../controllers/orders/shipmentStatus');
 const { pickedItemsOnly } = require('../controllers/orders/pickedItems');
+const { exportToExcel } = require('../helper/helper');
 
 const router = express.Router();
 
@@ -35,6 +36,9 @@ router.post('/checkstylecodeimport',checkImportedStylecode)
 router.get('/shipmentStatus',shipmentSatus)
 router.get('/searchStatus',searchOrderstatus)
 router.get('/onlypickedItems',pickedItemsOnly)
+
+//////////////Export to Excel////////////
+router.post('/export-excel',exportToExcel)
 
 
 module.exports = router;
