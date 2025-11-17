@@ -45,8 +45,6 @@ const poolBosConnect = poolBos.connect()
   });
 
 
-
-
 pool.on('error', err => {
   console.error('SQL errors', err);
 });

@@ -32,7 +32,7 @@ const stylecodeSearchIn = async (req, res) => {
         mpc.productPushed = '2' and  mpc.LocaleIN ='en-IN' and
         mpcsa.productPushed = '2' and mpcsa.LocaleIN ='en-IN'  and mpcsa.ExportedUrlKey IS NOT NULL
         and mpc.StyleCode 
-         in(select Stylecode from ImportedStylecodesIn_Sg where IsImported = '1' and LocaleIN='1' and Stylecode = @searchTerm)`);
+         in(select Stylecode from ImportedStylecodesIn_Sg where IsImported = '1' and LocaleIN='1' and Stylecode = @searchTerm OR Sku=@searchTerm)`);
 
         const response = result.recordset;
 
@@ -66,22 +66,22 @@ const stylecodeSearchSg = async (req, res) => {
             mpc.isstock,
             mpc.islock,
             mpc.isactive,
-            mpc.productpushedsg,
+            mpc.productpushed,
             mpc.ListingBranchCode,
             mpc.LocaleSG AS mpc_LocaleSG,
-            mpcsa.productpushedsg AS mpcsa_productPushedsg,
+            mpcsa.productpushed AS mpcsa_productPushed,
             mpcsa.isapproved,
             mpcsa.ExportedUrlKey,
             mpcsa.LocaleSG
             FROM 
                 mis.MarketPlaceCatalog AS mpc 
                 JOIN mis.MarketPlaceCatalog_StyleCode_Attributes AS mpcsa 
-                    ON mpc.StyleCode = mpcsa.StyleCode
+                ON mpc.StyleCode = mpcsa.StyleCode
             WHERE 
-            mpc.productpushedsg = '2' and  mpc.LocaleSG ='en-SG' and
-            mpcsa.productpushedsg = '2' and mpcsa.LocaleSG ='en-SG'  and mpcsa.ExportedUrlKey IS NOT NULL
+            mpc.productPushed = '2' and  mpc.LocaleSG ='en-SG' and
+            mpcsa.productPushed = '2' and mpcsa.LocaleSG ='en-SG'  and mpcsa.ExportedUrlKey IS NOT NULL
             and mpc.StyleCode 
-            in(select Stylecode from ImportedStylecodesIn_Sg where IsImported = '1' and LocaleSG='1' and Stylecode = @searchTerm)`);
+            in(select Stylecode from ImportedStylecodesIn_Sg where IsImported = '1' and LocaleSG='1' and (Stylecode = @searchTerm OR Sku=@searchTerm))`);
 
         const response = result.recordset;
 

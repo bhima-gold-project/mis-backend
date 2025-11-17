@@ -53,7 +53,7 @@ async function updateLocalesInDatabase(selectedRows) {
 }
 
 
-async function insertImportedStylecode(stylecode, IsImported, LocaleIN, LocaleSG) {
+async function insertImportedStylecode(stylecode, IsImported, LocaleIN, LocaleSG,Sku) {
   try {
     await pool
       .request()
@@ -61,9 +61,10 @@ async function insertImportedStylecode(stylecode, IsImported, LocaleIN, LocaleSG
       .input("IsImported", sql.Bit, IsImported)
       .input("LocaleIN", sql.Bit, LocaleIN)
       .input("LocaleSG", sql.Bit, LocaleSG)
+      .input("Sku", sql.VarChar, Sku)
       .query(
-        `INSERT INTO ImportedStylecodesIn_Sg (Stylecode, IsImported, LocaleIN, LocaleSG)
-         VALUES (@Stylecode, @IsImported, @LocaleIN, @LocaleSG)`
+        `INSERT INTO ImportedStylecodesIn_Sg (Stylecode, IsImported, LocaleIN, LocaleSG,Sku)
+         VALUES (@Stylecode, @IsImported, @LocaleIN, @LocaleSG,@Sku)`
       );
   } catch (err) {
     console.error("Error inserting imported stylecode:", err);
@@ -113,7 +114,7 @@ async function sendStylecodesToApi(req, res) {
 
     for (const item of mergedRecords) {
       const payload = JSON.stringify([item]);
-      const { Stylecode, LocaleIN, LocaleSG, Locale_IN, Locale_SG } = item;
+      const { Stylecode, LocaleIN, LocaleSG, Locale_IN, Locale_SG, Sku } = item;
 
       if (LocaleIN == 1 && Locale_IN == 'en-IN') {
         apiCalls.push({
@@ -124,9 +125,9 @@ async function sendStylecodesToApi(req, res) {
               headers: { "Content-Type": "application/json" },
             }).then((response) => {
               if (response?.data && response?.data?.success) {
-                insertImportedStylecode(Stylecode, 1, LocaleIN, LocaleSG)
+                insertImportedStylecode(Stylecode, 1, LocaleIN, LocaleSG, Sku)
               } else {
-                insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG)
+                insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG, Sku)
                 failedStylecodes.push({
                   Stylecode,
                   reason: `API error (IN) - ${response.data.message || 'Unknown error'}`,
@@ -134,7 +135,7 @@ async function sendStylecodesToApi(req, res) {
               }
             })
             .catch((err) => {
-              insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG)
+              insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG, Sku)
               failedStylecodes.push({
                 Stylecode,
                 reason: `API error (IN) - ${err.message}`,
@@ -152,9 +153,9 @@ async function sendStylecodesToApi(req, res) {
               headers: { "Content-Type": "application/json" },
             }).then((response) => {
               if (response?.data && response?.data?.success) {
-                insertImportedStylecode(Stylecode, 1, LocaleIN, LocaleSG)
+                insertImportedStylecode(Stylecode, 1, LocaleIN, LocaleSG, Sku)
               } else {
-                insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG)
+                insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG, Sku)
                 failedStylecodes.push({
                   Stylecode,
                   reason: `API error (SG) - ${response.data.message || 'Unknown error'}`,
@@ -162,7 +163,7 @@ async function sendStylecodesToApi(req, res) {
               }
             })
             .catch((err) => {
-              insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG)
+              insertImportedStylecode(Stylecode, 0, LocaleIN, LocaleSG, Sku)
               failedStylecodes.push({
                 Stylecode,
                 reason: `API error (SG) - ${err.message}`,
@@ -207,18 +208,18 @@ const reImportStylecode = async (req, res) => {
 
     let request = pool.request();
 
-     request.input(`Stylecode`, sql.VarChar, Stylecode)
+    request.input(`Stylecode`, sql.VarChar, Stylecode)
 
     const result = await request.query(`SELECT * FROM mis.vStylecodeBarcodeData WHERE Stylecode=@Stylecode`);
 
     const mergedData = result?.recordset.map(row => {
-   
+
       return {
         ...row,
         ...req.body
       };
     });
-    
+
     const apiUrls = await getApiUrls();
 
     const response = await axios.post(apiUrls.Productimport_IN, mergedData, {
@@ -248,4 +249,4 @@ const reImportStylecode = async (req, res) => {
 };
 
 
-module.exports = { sendStylecodesToApi,reImportStylecode };
+module.exports = { sendStylecodesToApi, reImportStylecode };
