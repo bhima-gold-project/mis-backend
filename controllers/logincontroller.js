@@ -31,18 +31,22 @@ const loginController = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid username or password' });
         }
 
-        const token = jwt.sign({ userId: user?.LoginID }, process.env.JWT_SCRETE, { expiresIn: '30d' })
+        const token = jwt.sign({ userId: user?.LoginID }, process.env.JWT_SCRETE, { expiresIn: "12h" })
 
         res.cookie("token", token, {
             withCredentials: true,
-            httpOnly: false,
+            httpOnly: true,
+            secure: false,            // HTTPS only (enable locally only if using HTTPS)
+            sameSite: "strict",
+            path: "/",
+           maxAge: 12 * 60 * 60 * 1000,
         });
 
         const userInfo = {
             username: user.UserName,
         };
 
-        return res.json({ success: true, user: userInfo, message: 'Logged In Successfully!',token:token });
+        return res.json({ success: true, user: userInfo, message: 'Logged In Successfully!', token: token });
 
     } catch (err) {
         console.error(err);
@@ -83,5 +87,5 @@ const logoutUser = async (req, res) => {
 }
 
 module.exports = {
-    loginController, getUserDetails,logoutUser
+    loginController, getUserDetails, logoutUser
 }

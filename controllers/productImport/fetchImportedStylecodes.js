@@ -85,7 +85,7 @@ const checkImportedStylecode = async (req, res) => {
       on  mc.StyleCode=kbm.StyleCode 
       inner join mis.stylecodeimageurl mi on mc.StyleCode=mi.StyleCode
                inner join KSTU_SKU_MASTER ksm on mc.SKU = ksm.SKU_ID
-      where  mc.IsActive=1 and MarketPlaceCode='BHIMA' and  IsApproved= 2 and sold_flag='N' and order_no='0' and IsStock=1 
+      where  mc.IsActive=1 and MarketPlaceCode='BHIMA' and  IsApproved= 2 and  IsStock=1 
       and mc.productPushed = 2 and mc.StyleCode=@Stylecode and ksm.SKU_ID=@Sku`)
 
       res.status(200).json({
@@ -119,7 +119,7 @@ const checkImportedStylecode = async (req, res) => {
           on  mc.SKU=kbm.barcode_no 
           inner join mis.stylecodeimageurl mi on mc.StyleCode=mi.StyleCode
           inner join KTTU_BARCODE_PRODUCT_DETAILS kp on kp.barcode_no=kbm.barcode_no
-          where  mc.IsActive=1 and MarketPlaceCode='BHIMA' and  IsApproved= 2 and sold_flag='N' and order_no='0' and IsStock=1 
+          where  mc.IsActive=1 and MarketPlaceCode='BHIMA' and  IsApproved= 2  and IsStock=1 
           and mc.productPushed = 2 and mc.StyleCode=@Stylecode and kbm.barcode_no=@Sku`);
 
       res.status(200).json({
