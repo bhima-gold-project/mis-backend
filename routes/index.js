@@ -3,7 +3,7 @@ const { loginController, getUserDetails, logoutUser } = require('../controllers/
 const userVerification = require('../middleware/userverification');
 const { fetchStylecodeImages, fetchProductImage } = require('../controllers/productImport/fetchstylecodeImage');
 const { sendStylecodesToApi, reImportStylecode } = require('../controllers/productImport/importstylecode');
-const { fetchImportedProducts, checkImportedStylecode } = require('../controllers/productImport/fetchImportedStylecodes');
+const { fetchImportedProducts, checkImportedStylecode, fetchImportedCoins } = require('../controllers/productImport/fetchImportedStylecodes');
 const { stylecodeSearchIn, stylecodeSearchSg, stylecodeSearchImportflow } = require('../controllers/productImport/stylecodeSearch');
 const { searchOrderstatus, shipmentSatus } = require('../controllers/orders/shipmentStatus');
 const { pickedItemsOnly } = require('../controllers/orders/pickedItems');
@@ -23,6 +23,7 @@ router.post('/getProductImages', fetchProductImage)
 
 router.post('/importStylecode', sendStylecodesToApi)
 router.get('/importedProducts',fetchImportedProducts)
+router.get('/importedCoins',fetchImportedCoins)
 //router.get('/importedProductsSg',fetchImportedProductsSg)
 router.post('/re_importStylecode',reImportStylecode)
 

@@ -26,6 +26,32 @@ const fetchImportedProducts = async (req, res) => {
 };
 
 
+const fetchImportedCoins = async (req, res) => {
+  try {
+    const { fromDate, toDate,Locale } = req.query;
+
+    const request = pool.request();
+
+     request.input('Locale', sql.NVarChar(10), Locale)
+     request.input('FromDate', sql.DateTime, fromDate)
+     request.input('ToDate', sql.DateTime, toDate)
+
+    const result = await request.query(`SELECT * FROM dbo.fnGetImportedCoins(@Locale, @FromDate, @ToDate)`);
+
+    res.setHeader('Cache-Control', 'no-store')
+
+    res.status(200).json({
+      success: true,
+      count: result.recordset.length,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error('❌ Error fetching imported products:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 // const fetchImportedProductsSg = async (req, res) => {
 //   try {
 //     const { fromDate, toDate } = req.query;
@@ -119,7 +145,7 @@ const checkImportedStylecode = async (req, res) => {
           on  mc.SKU=kbm.barcode_no 
           inner join mis.stylecodeimageurl mi on mc.StyleCode=mi.StyleCode
           inner join KTTU_BARCODE_PRODUCT_DETAILS kp on kp.barcode_no=kbm.barcode_no
-          where  mc.IsActive=1 and MarketPlaceCode='BHIMA' and  IsApproved= 2  and IsStock=1 
+          where  mc.IsActive=1 and MarketPlaceCode='BHIMA' and kbm.sold_flag='N' and kbm.order_no='0' and IsApproved= 2  and IsStock=1 
           and mc.productPushed = 2 and mc.StyleCode=@Stylecode and kbm.barcode_no=@Sku`);
 
       res.status(200).json({
@@ -137,5 +163,6 @@ const checkImportedStylecode = async (req, res) => {
 
 module.exports = {
   fetchImportedProducts,
-  checkImportedStylecode
+  checkImportedStylecode,
+  fetchImportedCoins
 }

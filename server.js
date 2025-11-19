@@ -10,7 +10,7 @@ const port = process.env.PORT_NO || 9000
 
 app.use(express.json())
 app.use(cors({
-    origin: ['http://localhost:3000','http://192.168.10.65:3000'],
+     origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }))
